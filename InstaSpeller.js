@@ -2,6 +2,7 @@
 
 var CreateInstaSpellModule = function (){
     var OPERATOR_ONE_ANY_LETTER = "?";
+    var OPERATOR_MANY_ANY_LETTERS = "%";
     var OPERATOR_ONE_RACK_LETTER = ".";
     var OPERATOR_MANY_RACK_LETTERS = "*";
     var BLANK_TILE = ".";
@@ -61,6 +62,11 @@ var CreateInstaSpellModule = function (){
                     matchesImpl(acc,pattern.substring(1));
                     return;
                 }
+                if (p === OPERATOR_MANY_ANY_LETTERS){
+                    matchesImpl(acc,OPERATOR_ONE_ANY_LETTER+pattern);
+                    matchesImpl(acc,pattern.substring(1));
+                    return;
+                }
 
                 // next letter
                 for (var i=0;i<alphabet.length;++i){
@@ -97,5 +103,10 @@ var CreateInstaSpellModule = function (){
 
     return {
         WordMatcher : WordMatcher,
+        OPERATOR_ONE_RACK_LETTER : OPERATOR_ONE_RACK_LETTER,
+        OPERATOR_ONE_ANY_LETTER : OPERATOR_ONE_ANY_LETTER,
+        OPERATOR_MANY_RACK_LETTERS : OPERATOR_MANY_RACK_LETTERS,
+        OPERATOR_MANY_ANY_LETTERS : OPERATOR_MANY_ANY_LETTERS,
+        BLANK_TILE : BLANK_TILE,
     };
 };
