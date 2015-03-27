@@ -139,7 +139,8 @@ console.timeEnd('someFunction');
                         continue;
                     }
 
-                    if (p===OPERATOR_ONE_RACK_LETTER && rackCounts[BLANK_TILE]){
+                    if ((p===OPERATOR_ONE_RACK_LETTER || p.toLowerCase()===lt) 
+                        && rackCounts[BLANK_TILE]){
                         rackCounts[BLANK_TILE]--;
                         matchesImpl(nextAcc,pattern.substring(1));
                         rackCounts[BLANK_TILE]++;
