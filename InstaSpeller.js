@@ -10,6 +10,31 @@ var CreateInstaSpellModule = function (){
 
     var alphabet =  "abcdefghijklmnopqrstuvwxyz".split("");
 
+    // Repeatedly reduce: ** -> *
+    //                    *. -> .*
+    //                    %% -> %
+    //                    %? -> ?%
+    function normalizePattern(pattern){
+        var types = [[OPERATOR_ONE_ANY_LETTER,OPERATOR_MANY_ANY_LETTERS],
+                     [OPERATOR_ONE_RACK_LETTER,OPERATOR_MANY_RACK_LETTERS]];
+        var changed = true;
+        while (changed){
+            changed = false;
+            var npattern = pattern;
+            for (var i=0;i<types.length;++i){
+                var single = types[i][0];
+                var multi = types[i][1];
+                npattern = npattern.replace(multi+single, single+multi);
+                npattern = npattern.replace(multi+multi, multi);
+            }
+            if (npattern !== pattern){
+                changed = true;
+                pattern = npattern;
+            }
+        }
+        return pattern;
+    }
+
     // list of lowercase alphabetic strings -> WordMatcher
     function WordMatcher(dictionary){
         var words = dictionary.slice();
@@ -18,27 +43,37 @@ var CreateInstaSpellModule = function (){
         for (var i=0;i<words.length;++i){
             var word = words[i];
             for (var j=1;j<=word.length;++j){
-                prefixes[word.substring(0,j)] = false;
+                var prefix = word.substring(0,j);
+                if (!prefixes.hasOwnProperty(prefixes)){
+                    prefixes[prefix] = {
+                        isWord : false,
+                        longest : 0,//longest suffix s such that prefix+s is a word
+                    };
+                }
+                var entry = prefixes[prefix];
+                if (j===word.length){
+                    entry.isWord = true;
+                }
+                
             }
         }  
-        for (var i=0;i<words.length;++i){
-            var word = words[i];
-            prefixes[word] = true;
-        }  
 
 
-
-        function isPrefix(word){
-            return prefixes.hasOwnProperty(word);
+        function isPrefix(prefix){
+            return prefixes.hasOwnProperty(prefix);
+        }
+        function longestSuffixLength(prefix){
+            return prefixes[prefix].longest;
         }
 
         function isWord(word){
-            return prefixes[word] === true;
+            return prefixes.hasOwnProperty(word) && prefixes[word].isWord;
         }
 
         
 
         this.getMatches = function(rack,pattern){
+            pattern = normalizePattern(pattern);
             var results = [];
             var rackCounts = {};
             for (var i=0;i<rack.length;++i){
