@@ -39,25 +39,29 @@ var CreateInstaSpellModule = function (){
     function WordMatcher(dictionary){
         var words = dictionary.slice();
 
+        console.time('someFunction');
+
         var prefixes = {};
         for (var i=0;i<words.length;++i){
             var word = words[i];
-            for (var j=1;j<=word.length;++j){
+            for (var j=0;j<=word.length;++j){
                 var prefix = word.substring(0,j);
-                if (!prefixes.hasOwnProperty(prefixes)){
+                if (!prefixes.hasOwnProperty(prefix)){
                     prefixes[prefix] = {
                         isWord : false,
                         longest : 0,//longest suffix s such that prefix+s is a word
                     };
                 }
                 var entry = prefixes[prefix];
+                entry.longest = Math.max(entry.longest, word.length-j);
                 if (j===word.length){
                     entry.isWord = true;
                 }
+                prefixes[prefix] = entry;
                 
             }
         }  
-
+console.timeEnd('someFunction');
 
         function isPrefix(prefix){
             return prefixes.hasOwnProperty(prefix);
@@ -65,11 +69,20 @@ var CreateInstaSpellModule = function (){
         function longestSuffixLength(prefix){
             return prefixes[prefix].longest;
         }
-
         function isWord(word){
             return prefixes.hasOwnProperty(word) && prefixes[word].isWord;
         }
 
+        function minimumMatchLength(pattern){
+            var c=0;
+            for (var i=0;i<pattern.length;++i){
+                var p = pattern[i];
+                if (p!== OPERATOR_MANY_ANY_LETTERS && p!==OPERATOR_MANY_RACK_LETTERS){
+                    c++;
+                }
+            }
+            return c;
+        }
         
 
         this.getMatches = function(rack,pattern){
@@ -88,6 +101,9 @@ var CreateInstaSpellModule = function (){
                     if (isWord(acc)){
                         results.push(acc);
                     }
+                    return;
+                }
+                if (longestSuffixLength(acc) < minimumMatchLength(pattern)){
                     return;
                 }
 
