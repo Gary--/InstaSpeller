@@ -39,8 +39,6 @@ var CreateInstaSpellModule = function (){
     function WordMatcher(dictionary){
         var words = dictionary.slice();
 
-        console.time('someFunction');
-
         var prefixes = {};
         for (var i=0;i<words.length;++i){
             var word = words[i];
@@ -61,7 +59,6 @@ var CreateInstaSpellModule = function (){
                 
             }
         }  
-console.timeEnd('someFunction');
 
         function isPrefix(prefix){
             return prefixes.hasOwnProperty(prefix);
