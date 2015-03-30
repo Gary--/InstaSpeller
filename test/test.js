@@ -33,14 +33,26 @@ describe("Correctness", function() {
     function m(rack,pattern){
         return matcher.getMatches(rack,pattern);
     }
+    function t(rack,pattern,expectedResult){
+        var result = m(rack,pattern);
+        result.sort();
+        expectedResult.sort();
+        expect(result.length).to.equal(expectedResult.length);
 
-
+        _.each(result,function(w,i){
+            expect(w).to.equal(expectedResult[i]);
+        });
+    }
 
     it("No rack, exact word match",function(){
         _.each(words,function(w){
-            var result = m("",w);
-            expect(result.length).to.equal(1);
-            expect(result[0]).to.equal(w);
+            t("",w,[w]);
+        });
+        var notWords=["xkcd","zedss","atale"];
+        _.each(notWords,function(w){
+            t("",w,[]);
         });
     });
+
+
 });
