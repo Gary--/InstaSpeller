@@ -1,0 +1,5 @@
+{
+  "undef": true,
+  "unused": true,
+  "predef": [ "_","console","alert","ospd_word_list","CreateInstaSpellModule","it","chai","describe" ]
+}
